@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vừa học vừa chơi - LingLing HSK</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- CSS DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+  <!-- JS jQuery & DataTables -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="announcement-bar">
+      <span>anounce</span>
+    </div>
+
+    <div class="top-header">
+      <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="Mở menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <div class="logo-container">
+        <a href="index.html" class="logo-link">
+          <span class="brand-chinese">玲玲</span>
+          <span class="brand-latin">HSK</span>
+        </a>
+      </div>
+
+      <div class="header-icons">
+        <div class="icon-wrapper">
+          <button type="button" class="icon-btn" id="searchBtn" aria-label="Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+          
+          <div class="search-box" id="searchBox">
+            <div class="search-input-group">
+              <input type="text" id="searchInput" placeholder="TÌM KIẾM..." autocomplete="off">
+              <button type="button" id="searchSubmitBtn" aria-label="Submit Search">
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+
+            <!-- Khung gợi ý kết quả tự động -->
+            <div class="search-results-dropdown" id="searchResultsDropdown"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="nav-bar" id="navbar">
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <div class="nav-menu-wrapper" id="navMenuWrapper">
+      <button type="button" class="close-btn" id="closeBtn" aria-label="Đóng menu">&times;</button>
+
+      <ul class="nav-links">
+        <li><a href="#" class="sale-link">SẮP KHAI GIẢNG</a></li>
+        <li class="has-dropdown"><a href="#">KHÓA HỌC</a></li>
+        <li><a href="#">LỊCH KHAI GIẢNG</a></li>
+        <li class="has-dropdown"><a href="#">THƯ VIỆN</a></li>
+        <li><a href="#">TIN TỨC</a></li>
+        <li><a href="#">TƯ VẤN</a></li>
+        <li class="has-dropdown"><a href="#" class="brand-item">玲玲HSK</a></li>
+      </ul>
+    </div>
+  </nav>
+
+<div style="text-align: center; margin-top: 80px;">
+<p>Nào kênh này được 2000 follow thì mở lớp nhíe </p>
+</div>
+
+<iframe 
+  src="https://widgets.sociablekit.com/tiktok-feed/iframe/25711679" 
+  frameborder="0" 
+  width="80%" 
+  height="600px"
+  style="display: block; margin: 40px auto 80px auto;"
+  title="TikTok Feed Widget">
+</iframe>
+
+    <script src="script.js"></script>
+</body>
+</html>

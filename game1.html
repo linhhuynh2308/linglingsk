@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vừa học vừa chơi - LingLing HSK</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- CSS DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+  <!-- JS jQuery & DataTables -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="announcement-bar">
+      <span>anounce</span>
+    </div>
+
+    <div class="top-header">
+      <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="Mở menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <div class="logo-container">
+        <a href="index.html" class="logo-link">
+          <span class="brand-chinese">玲玲</span>
+          <span class="brand-latin">HSK</span>
+        </a>
+      </div>
+
+      <div class="header-icons">
+        <div class="icon-wrapper">
+          <button type="button" class="icon-btn" id="searchBtn" aria-label="Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+          
+          <div class="search-box" id="searchBox">
+            <div class="search-input-group">
+              <input type="text" id="searchInput" placeholder="TÌM KIẾM..." autocomplete="off">
+              <button type="button" id="searchSubmitBtn" aria-label="Submit Search">
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+
+            <!-- Khung gợi ý kết quả tự động -->
+            <div class="search-results-dropdown" id="searchResultsDropdown"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="nav-bar" id="navbar">
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <div class="nav-menu-wrapper" id="navMenuWrapper">
+      <button type="button" class="close-btn" id="closeBtn" aria-label="Đóng menu">&times;</button>
+
+      <ul class="nav-links">
+        <li><a href="#" class="sale-link">SẮP KHAI GIẢNG</a></li>
+        <li class="has-dropdown"><a href="#">KHÓA HỌC</a></li>
+        <li><a href="#">LỊCH KHAI GIẢNG</a></li>
+        <li class="has-dropdown"><a href="#">THƯ VIỆN</a></li>
+        <li><a href="#">TIN TỨC</a></li>
+        <li><a href="#">TƯ VẤN</a></li>
+        <li class="has-dropdown"><a href="#" class="brand-item">玲玲HSK</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <!-- 1. MÀN HÌNH NHẬP TỪ VỰNG -->
+    <section id="setup-screen" class="screen active">
+      <div class="card-modal">
+        <h1 class="title">NHẬP TỪ VỰNG</h1>
+        
+        <div class="input-container">
+          <!-- Bảng nhập chi tiết bên trái -->
+          <div class="table-wrapper">
+            <table id="vocab-table">
+              <thead>
+                <tr>
+                  <th>hán tự</th>
+                  <th>pinyin</th>
+                  <th>nghĩa</th>
+                </tr>
+              </thead>
+              <tbody id="table-body">
+                <tr>
+                  <td><input type="text" class="input-hanzi" placeholder="你好"></td>
+                  <td><input type="text" class="input-pinyin" placeholder="nǐ hǎo"></td>
+                  <td><input type="text" class="input-meaning" placeholder="xin chào"></td>
+                </tr>
+                <tr>
+                  <td><input type="text" class="input-hanzi"></td>
+                  <td><input type="text" class="input-pinyin"></td>
+                  <td><input type="text" class="input-meaning"></td>
+                </tr>
+                <tr>
+                  <td><input type="text" class="input-hanzi"></td>
+                  <td><input type="text" class="input-pinyin"></td>
+                  <td><input type="text" class="input-meaning"></td>
+                </tr>
+                <tr>
+                  <td><input type="text" class="input-hanzi"></td>
+                  <td><input type="text" class="input-pinyin"></td>
+                  <td><input type="text" class="input-meaning"></td>
+                </tr>
+                <tr>
+                  <td><input type="text" class="input-hanzi" placeholder="..."></td>
+                  <td><input type="text" class="input-pinyin"></td>
+                  <td><input type="text" class="input-meaning"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Khung nhập nhanh bên phải -->
+          <div class="textarea-wrapper">
+            <textarea id="quick-input" placeholder="Hán tự... (Nhập hoặc dán các từ phân cách bằng dấu cách)"></textarea>
+          </div>
+        </div>
+
+        <button id="btn-start" class="btn-start">START</button>
+      </div>
+    </section>
+
+    <!-- 2. MÀN HÌNH GAME SCHULTE -->
+    <section id="game-screen" class="screen">
+      <div class="game-container">
+        <div class="top-bar">
+          <div class="target-info">
+            <span>Từ đang đọc:</span>
+            <button id="btn-replay" class="btn-icon">🔊 Nghe lại</button>
+          </div>
+
+          <div class="timer-box">
+            <div id="timer-bar" class="timer-bar"></div>
+            <span id="timer-text">7s</span>
+          </div>
+
+          <div class="score-box">
+            Tiến độ: <span id="score-text">0/0</span>
+          </div>
+
+          <button id="btn-stop" class="btn-stop">⏸ Dừng học</button>
+        </div>
+
+        <!-- Sân chơi Schulte -->
+        <div id="game-board" class="game-board">
+          <!-- OVERLAY TẠM DỪNG NẰM NGAY TRÊN MÀN HÌNH HỌC -->
+          <div id="pause-modal" class="pause-overlay" style="display: none;">
+            <div class="pause-card">
+              <h3>ĐÃ TẠM DỪNG</h3>
+              <p>Bạn muốn tiếp tục hay quay về chỉnh sửa từ vựng?</p>
+              <div class="pause-actions">
+                <button id="btn-resume" class="btn-resume">▶ Tiếp tục học</button>
+                <button id="btn-exit" class="btn-exit">🚪 Thoát về từ vựng</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Thư viện tự động chuyển Hán tự sang Pinyin -->
+  <script src="https://unpkg.com/pinyin-pro"></script>
+
+  
+  <script src="script.js"></script>
+</body>
+</html>
