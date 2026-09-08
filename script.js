@@ -32,82 +32,8 @@ const navMenuData = {
 };
 
 /* =========================================================
-   2. HÀM THÔNG BÁO GIỮA MÀN HÌNH (PREMIUM CENTER TOAST) & STYLE
+   2. HÀM THÔNG BÁO GIỮA MÀN HÌNH (PREMIUM CENTER TOAST)
    ========================================================= */
-(function injectToastStyles() {
-  if (document.getElementById('custom-toast-style')) return;
-  const style = document.createElement('style');
-  style.id = 'custom-toast-style';
-  style.innerHTML = `
-    .custom-toast-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(15, 23, 42, 0.45);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999999;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
-                  visibility 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    
-    .custom-toast-overlay.show {
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    .custom-toast-box {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 28px 40px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2),
-                  0 0 0 1px rgba(243, 143, 29, 0.15);
-      text-align: center;
-      min-width: 280px;
-      max-width: 90%;
-      transform: scale(0.8) translateY(10px);
-      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    
-    .custom-toast-overlay.show .custom-toast-box {
-      transform: scale(1) translateY(0);
-    }
-    
-    .custom-toast-icon-wrapper {
-      width: 56px;
-      height: 56px;
-      margin: 0 auto 12px auto;
-      border-radius: 50%;
-      background: linear-gradient(135deg, rgba(243, 143, 29, 0.12), rgba(243, 143, 29, 0.05));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .custom-toast-icon {
-      font-size: 28px;
-      line-height: 1;
-    }
-    
-    .custom-toast-message {
-      font-size: 15px;
-      font-weight: 700;
-      color: #0f172a;
-      letter-spacing: -0.2px;
-      line-height: 1.5;
-    }
-  `;
-  document.head.appendChild(style);
-})();
-
 function showCenterToast(message, icon = "✅", duration = 1600) {
   const oldToast = document.getElementById('customToast');
   if (oldToast) oldToast.remove();
@@ -140,7 +66,7 @@ function showCenterToast(message, icon = "✅", duration = 1600) {
 }
 
 /* =========================================================
-   3. CÁC HÀM BỔ TRỢ (HELPER FUNCTIONS)
+   3. CÁC HÀM BỔ TRỢ NAVMENU & SEARCH
    ========================================================= */
 function initDropdownMenu() {
   const navItems = document.querySelectorAll('.nav-links > li.has-dropdown');
@@ -176,7 +102,7 @@ function initDropdownMenu() {
 }
 
 /* =========================================================
-   4. KHỞI TẠO LOGIC KHI DOM READY
+   4. KHỞI TẠO LOGIC KHI DOM READY (NAV & SEARCH)
    ========================================================= */
 document.addEventListener('DOMContentLoaded', () => {
   initDropdownMenu();
@@ -192,9 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchSubmitBtn = document.getElementById('searchSubmitBtn');
   const dropdownResults = document.getElementById('searchResultsDropdown');
 
-  /* -------------------------------------------------------
-     A. MOBILE MENU NAVIGATION
-     ------------------------------------------------------- */
   function openMobileMenu() {
     if (navMenuWrapper) navMenuWrapper.classList.add('active');
     if (menuOverlay) menuOverlay.classList.add('active');
@@ -224,9 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /* -------------------------------------------------------
-     B. POPUP TOGGLE (SEARCH ICON)
-     ------------------------------------------------------- */
   if (searchBtn && searchBox) {
     searchBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -242,9 +162,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchBox) searchBox.classList.remove('active');
   });
 
-  /* -------------------------------------------------------
-     C. LIVE SEARCH & DATA CÀO THẬT TỪ PAGE
-     ------------------------------------------------------- */
   function getRealPageData() {
     const realData = [];
     const addedTitles = new Set();
@@ -341,23 +258,36 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ==========================================
-// GLOBALS & STATE MANAGEMENT
-// ==========================================
+/* =========================================================
+   5. GLOBALS & STATE MANAGEMENT (GAME SCHULTE)
+   ========================================================= */
 let masterList = [];       
 let remainingPool = [];    
-let activeBoardBatch = []; // Tối đa 30 từ đang hiển thị
+let activeBoardBatch = []; 
 let currentTarget = null;
 let timerInterval = null;
 let timeLeft = 8;
 let isPaused = false;
 
-const MAX_BOARD_WORDS = 50;
+// Hàm tự động xác định số lượng từ theo thiết bị
+function getMaxWordsByScreen() {
+  const width = window.innerWidth;
+  if (width <= 600) return 25;       // Mobile: 25 từ
+  if (width <= 1024) return 40;      // iPad/Tablet: 40 từ
+  return 50;                          // Laptop/PC: 50 từ
+}
+
+let MAX_BOARD_WORDS = getMaxWordsByScreen();
+
+window.addEventListener('resize', () => {
+  MAX_BOARD_WORDS = getMaxWordsByScreen();
+});
+
 const tbody = document.getElementById('table-body');
 
-// ==========================================
-// 1. NHẬP VỰNG & PASTE EXCEL
-// ==========================================
+/* =========================================================
+   6. NHẬP VỰNG & PASTE EXCEL
+   ========================================================= */
 function createNewRow() {
   const tr = document.createElement('tr');
   tr.innerHTML = `
@@ -365,189 +295,221 @@ function createNewRow() {
     <td><input type="text" class="input-pinyin"></td>
     <td><input type="text" class="input-meaning"></td>
   `;
-  tbody.appendChild(tr);
+  if (tbody) tbody.appendChild(tr);
   return tr;
 }
 
-tbody.addEventListener('input', () => {
-  const rows = tbody.querySelectorAll('tr');
-  const lastRow = rows[rows.length - 1];
-  const inputs = lastRow.querySelectorAll('input');
-  if (Array.from(inputs).some(input => input.value.trim() !== '')) {
-    createNewRow();
-  }
-});
-
-tbody.addEventListener('paste', (e) => {
-  e.preventDefault();
-  const clipboardData = (e.clipboardData || window.clipboardData).getData('text');
-  if (!clipboardData) return;
-
-  const rowsData = clipboardData.trim().split(/\r\n|\n|\r/);
-  const activeInput = document.activeElement;
-  if (!activeInput || activeInput.tagName !== 'INPUT') return;
-
-  const activeTd = activeInput.closest('td');
-  const activeTr = activeTd.closest('tr');
-  const startColIndex = Array.from(activeTr.children).indexOf(activeTd);
-  
-  let currentTr = activeTr;
-
-  rowsData.forEach(rowText => {
-    if (!currentTr) currentTr = createNewRow();
-    const colsData = rowText.split('\t');
-    const inputs = currentTr.querySelectorAll('input');
-
-    colsData.forEach((cellText, i) => {
-      const targetColIndex = startColIndex + i;
-      if (targetColIndex < inputs.length) {
-        inputs[targetColIndex].value = cellText.trim();
-      }
-    });
-    currentTr = currentTr.nextElementSibling;
-  });
-
-  const allRows = tbody.querySelectorAll('tr');
-  const lastInputs = allRows[allRows.length - 1].querySelectorAll('input');
-  if (Array.from(lastInputs).some(inp => inp.value.trim() !== '')) {
-    createNewRow();
-  }
-});
-
-// ==========================================
-// 2. KHỞI TẠO GAME
-// ==========================================
-document.getElementById('btn-start').addEventListener('click', () => {
-  masterList = [];
-  
-  const rows = tbody.querySelectorAll('tr');
-  rows.forEach(row => {
-    const hanzi = row.querySelector('.input-hanzi').value.trim();
-    let pinyin = row.querySelector('.input-pinyin').value.trim();
-    const meaning = row.querySelector('.input-meaning').value.trim();
-
-    if (hanzi) {
-      if (!pinyin && window.pinyinPro) {
-        pinyin = pinyinPro.pinyin(hanzi, { toneType: 'symbol' });
-      }
-      masterList.push({ id: Math.random().toString(36).substr(2, 9), hanzi, pinyin, meaning });
+if (tbody) {
+  tbody.addEventListener('input', () => {
+    const rows = tbody.querySelectorAll('tr');
+    const lastRow = rows[rows.length - 1];
+    const inputs = lastRow.querySelectorAll('input');
+    if (Array.from(inputs).some(input => input.value.trim() !== '')) {
+      createNewRow();
     }
   });
 
-  const rawText = document.getElementById('quick-input').value.trim();
-  if (rawText) {
-    const words = rawText.split(/[\s,\n]+/).filter(w => w.trim() !== '');
-    words.forEach(hanzi => {
-      let pinyin = window.pinyinPro ? pinyinPro.pinyin(hanzi, { toneType: 'symbol' }) : '';
-      masterList.push({ id: Math.random().toString(36).substr(2, 9), hanzi, pinyin, meaning: '' });
+  tbody.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const clipboardData = (e.clipboardData || window.clipboardData).getData('text');
+    if (!clipboardData) return;
+
+    const rowsData = clipboardData.trim().split(/\r\n|\n|\r/);
+    const activeInput = document.activeElement;
+    if (!activeInput || activeInput.tagName !== 'INPUT') return;
+
+    const activeTd = activeInput.closest('td');
+    const activeTr = activeTd.closest('tr');
+    const startColIndex = Array.from(activeTr.children).indexOf(activeTd);
+    
+    let currentTr = activeTr;
+
+    rowsData.forEach(rowText => {
+      if (!currentTr) currentTr = createNewRow();
+      const colsData = rowText.split('\t');
+      const inputs = currentTr.querySelectorAll('input');
+
+      colsData.forEach((cellText, i) => {
+        const targetColIndex = startColIndex + i;
+        if (targetColIndex < inputs.length) {
+          inputs[targetColIndex].value = cellText.trim();
+        }
+      });
+      currentTr = currentTr.nextElementSibling;
     });
-  }
 
-  if (masterList.length === 0) {
-    alert("Vui lòng nhập hoặc dán ít nhất 1 từ vựng!");
-    return;
-  }
-
-  let shuffled = [...masterList].sort(() => Math.random() - 0.5);
-  activeBoardBatch = shuffled.slice(0, MAX_BOARD_WORDS);
-  remainingPool = shuffled.slice(MAX_BOARD_WORDS);
-
-  document.getElementById('setup-screen').classList.remove('active');
-  document.getElementById('game-screen').classList.add('active');
-
-  isPaused = false;
-  document.getElementById('pause-modal').style.display = 'none';
-  
-  renderFullBoard();
-  nextTurn();
-});
-
-// ==========================================
-// 3. THUẬT TOÁN SCHULTE & THAY TỪ TẠI CHỖ
-// ==========================================
-function renderFullBoard() {
-  const board = document.getElementById('game-board');
-  
-  // Giữ lại overlay pause nếu có
-  const pauseModal = document.getElementById('pause-modal');
-  board.innerHTML = '';
-  board.appendChild(pauseModal);
-  
-  const placedRects = [];
-  const padding = 18;
-
-  activeBoardBatch.forEach((item) => {
-    createAndPlaceCard(item, board, placedRects, padding);
+    const allRows = tbody.querySelectorAll('tr');
+    const lastInputs = allRows[allRows.length - 1].querySelectorAll('input');
+    if (Array.from(lastInputs).some(inp => inp.value.trim() !== '')) {
+      createNewRow();
+    }
   });
 }
 
-// Tạo và đặt vị trí thẻ chữ
-function createAndPlaceCard(item, board, placedRects, padding, targetPos = null) {
+/* =========================================================
+   7. KHỞI TẠO GAME
+   ========================================================= */
+const btnStart = document.getElementById('btn-start');
+if (btnStart) {
+  btnStart.addEventListener('click', () => {
+    masterList = [];
+    
+    if (tbody) {
+      const rows = tbody.querySelectorAll('tr');
+      rows.forEach(row => {
+        const hanziInput = row.querySelector('.input-hanzi');
+        const pinyinInput = row.querySelector('.input-pinyin');
+        const meaningInput = row.querySelector('.input-meaning');
+
+        const hanzi = hanziInput ? hanziInput.value.trim() : '';
+        let pinyin = pinyinInput ? pinyinInput.value.trim() : '';
+        const meaning = meaningInput ? meaningInput.value.trim() : '';
+
+        if (hanzi) {
+          if (!pinyin && window.pinyinPro) {
+            pinyin = pinyinPro.pinyin(hanzi, { toneType: 'symbol' });
+          }
+          masterList.push({ id: Math.random().toString(36).substr(2, 9), hanzi, pinyin, meaning });
+        }
+      });
+    }
+
+    const quickInput = document.getElementById('quick-input');
+    const rawText = quickInput ? quickInput.value.trim() : '';
+    if (rawText) {
+      const words = rawText.split(/[\s,\n]+/).filter(w => w.trim() !== '');
+      words.forEach(hanzi => {
+        let pinyin = window.pinyinPro ? pinyinPro.pinyin(hanzi, { toneType: 'symbol' }) : '';
+        masterList.push({ id: Math.random().toString(36).substr(2, 9), hanzi, pinyin, meaning: '' });
+      });
+    }
+
+    if (masterList.length === 0) {
+      alert("Vui lòng nhập hoặc dán ít nhất 1 từ vựng!");
+      return;
+    }
+
+    let shuffled = [...masterList].sort(() => Math.random() - 0.5);
+    activeBoardBatch = shuffled.slice(0, MAX_BOARD_WORDS);
+    remainingPool = shuffled.slice(MAX_BOARD_WORDS);
+
+    document.getElementById('setup-screen').classList.remove('active');
+    document.getElementById('game-screen').classList.add('active');
+
+    isPaused = false;
+    const pauseModal = document.getElementById('pause-modal');
+    if (pauseModal) pauseModal.style.display = 'none';
+    
+    renderFullBoard();
+    nextTurn();
+  });
+}
+
+/* =========================================================
+   8. THUẬT TOÁN GRID-BASED LƯỚI BẢO ĐẢM KHÔNG ĐÈ CHỮ
+   ========================================================= */
+function renderFullBoard() {
+  const board = document.getElementById('game-board');
+  if (!board) return;
+
+  const pauseModal = document.getElementById('pause-modal');
+  board.innerHTML = '';
+  if (pauseModal) board.appendChild(pauseModal);
+
+  const boardWidth = board.clientWidth || window.innerWidth;
+  const boardHeight = board.clientHeight || (window.innerHeight - 60);
+
+  // Tính số hàng và cột cho lưới
+  const totalCells = activeBoardBatch.length;
+  const cols = Math.ceil(Math.sqrt(totalCells * (boardWidth / boardHeight)));
+  const rows = Math.ceil(totalCells / cols);
+
+  const cellWidth = boardWidth / cols;
+  const cellHeight = boardHeight / rows;
+
+  // Tạo ô lưới
+  let gridSlots = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      gridSlots.push({
+        x: c * cellWidth,
+        y: r * cellHeight,
+        w: cellWidth,
+        h: cellHeight
+      });
+    }
+  }
+
+  // Xáo trộn vị trí các ô lưới
+  gridSlots.sort(() => Math.random() - 0.5);
+
+  activeBoardBatch.forEach((item, index) => {
+    const slot = gridSlots[index];
+    createAndPlaceCard(item, board, slot);
+  });
+}
+
+function createAndPlaceCard(item, board, slot = null, targetPos = null) {
   const card = document.createElement('div');
   card.className = 'word-card';
   card.setAttribute('data-id', item.id);
   
-  const fontSize = Math.floor(Math.random() * 6) + 20;
+  // Tùy chỉnh phông chữ theo độ rộng thiết bị
+  const width = window.innerWidth;
+  let baseSize = 18;
+  if (width <= 600) baseSize = 13;
+  else if (width <= 1024) baseSize = 15;
+
+  const fontSize = Math.floor(Math.random() * 3) + baseSize;
   card.style.fontSize = `${fontSize}px`;
 
   card.innerHTML = `
     <span>${item.hanzi}</span>
-    <span class="pinyin-tag">${item.pinyin}</span>
+    ${item.pinyin ? `<span class="pinyin-tag">${item.pinyin}</span>` : ''}
   `;
 
+  board.appendChild(card);
+
   if (targetPos) {
-    // Nếu có vị trí cũ -> Đặt ngay vào vị trí cũ (Thay từ tại chỗ)
+    // Trường hợp thay từ mới vào vị trí cũ
     card.style.left = targetPos.left;
     card.style.top = targetPos.top;
-    board.appendChild(card);
-  } else {
-    // Rải ngẫu nhiên ban đầu không trùng vị trí
-    card.style.visibility = 'hidden';
-    board.appendChild(card);
-    
-    const cardWidth = card.offsetWidth;
-    const cardHeight = card.offsetHeight;
-    const boardWidth = board.clientWidth;
-    const boardHeight = board.clientHeight;
+    card.setAttribute('data-slot', JSON.stringify(targetPos.slot || {}));
+  } else if (slot) {
+    // Đặt vào ô lưới ngẫu nhiên
+    const cardW = card.offsetWidth;
+    const cardH = card.offsetHeight;
 
-    let posX = 0, posY = 0, overlaps = true, maxAttempts = 250;
+    const maxOffsetX = Math.max(0, slot.w - cardW - 8);
+    const maxOffsetY = Math.max(0, slot.h - cardH - 8);
 
-    while (overlaps && maxAttempts > 0) {
-      maxAttempts--;
-      posX = Math.floor(Math.random() * (boardWidth - cardWidth - padding * 2)) + padding;
-      posY = Math.floor(Math.random() * (boardHeight - cardHeight - padding * 2)) + padding;
+    const offsetX = Math.floor(Math.random() * maxOffsetX) + 4;
+    const offsetY = Math.floor(Math.random() * maxOffsetY) + 4;
 
-      overlaps = placedRects.some(rect => !(
-        posX + cardWidth + padding < rect.x ||
-        posX > rect.x + rect.w + padding ||
-        posY + cardHeight + padding < rect.y ||
-        posY > rect.y + rect.h + padding
-      ));
-    }
+    const finalLeft = slot.x + offsetX;
+    const finalTop = slot.y + offsetY;
 
-    placedRects.push({ x: posX, y: posY, w: cardWidth, h: cardHeight });
-    card.style.left = `${posX}px`;
-    card.style.top = `${posY}px`;
-    card.style.visibility = 'visible';
+    card.style.left = `${finalLeft}px`;
+    card.style.top = `${finalTop}px`;
+    card.setAttribute('data-slot', JSON.stringify(slot));
   }
 
   card.addEventListener('click', () => handleCardClick(item, card));
 }
 
-// ==========================================
-// 4. VOICE CHUẨN ĐỢT ĐẦU & GAMEPLAY
-// ==========================================
+/* =========================================================
+   9. PHÁT ÂM & GAMEPLAY
+   ========================================================= */
 function playVoice(text) {
   if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel(); // Dừng phát âm cũ
+    window.speechSynthesis.cancel();
     if (isPaused) return;
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'zh-CN';
-    utterance.rate = 0.8;  // Tốc độ chuẩn rõ tiếng
+    utterance.rate = 0.8;
     utterance.pitch = 1.0;
 
-    // Ưu tiên chọn voice gốc tự nhiên của hệ thống
     const voices = window.speechSynthesis.getVoices();
     const zhVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('CN'));
     if (zhVoice) utterance.voice = zhVoice;
@@ -556,7 +518,6 @@ function playVoice(text) {
   }
 }
 
-// Load giọng chuẩn khi vừa vào trang
 if ('speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 }
@@ -570,8 +531,9 @@ function nextTurn() {
     return;
   }
 
+  const scoreText = document.getElementById('score-text');
   const learnedCount = masterList.length - (activeBoardBatch.length + remainingPool.length);
-  document.getElementById('score-text').innerText = `${learnedCount}/${masterList.length}`;
+  if (scoreText) scoreText.innerText = `${learnedCount}/${masterList.length}`;
 
   const randomIndex = Math.floor(Math.random() * activeBoardBatch.length);
   currentTarget = activeBoardBatch[randomIndex];
@@ -580,11 +542,13 @@ function nextTurn() {
   startTimer();
 }
 
-document.getElementById('btn-replay').addEventListener('click', () => {
-  if (currentTarget && !isPaused) playVoice(currentTarget.hanzi);
-});
+const btnReplay = document.getElementById('btn-replay');
+if (btnReplay) {
+  btnReplay.addEventListener('click', () => {
+    if (currentTarget && !isPaused) playVoice(currentTarget.hanzi);
+  });
+}
 
-// Timer 7s
 function startTimer() {
   clearInterval(timerInterval);
   timeLeft = 8;
@@ -612,7 +576,6 @@ function updateTimerUI() {
   if (timerText) timerText.innerText = `${Math.ceil(Math.max(0, timeLeft))}s`;
 }
 
-// CHỌN ĐÚNG: Thay từ mới vào CHÍNH TỌA ĐỘ thẻ vừa biến mất
 function handleCardClick(item, cardElement) {
   if (isPaused || !currentTarget) return;
 
@@ -620,60 +583,63 @@ function handleCardClick(item, cardElement) {
     clearInterval(timerInterval);
     cardElement.classList.add('correct');
 
-    // Lưu lại vị trí chính xác của thẻ vừa đoán đúng
     const oldPos = {
       left: cardElement.style.left,
-      top: cardElement.style.top
+      top: cardElement.style.top,
+      slot: JSON.parse(cardElement.getAttribute('data-slot') || '{}')
     };
 
     setTimeout(() => {
-      // 1. Loại bỏ từ khỏi mảng đang chơi
       activeBoardBatch = activeBoardBatch.filter(i => i.id !== item.id);
       cardElement.remove();
 
-      // 2. Nếu còn từ trong kho dự trữ -> Thay thế ngay vào vị trí cũ
       if (remainingPool.length > 0) {
         const newWord = remainingPool.shift();
         activeBoardBatch.push(newWord);
-        createAndPlaceCard(newWord, document.getElementById('game-board'), [], 0, oldPos);
+        createAndPlaceCard(newWord, document.getElementById('game-board'), null, oldPos);
       }
 
       nextTurn();
     }, 600);
 
   } else {
-    // CHỌN SAI
     cardElement.classList.add('wrong');
-    setTimeout(() => {
-      cardElement.classList.remove('wrong');
-    }, 900);
+    setTimeout(() => cardElement.classList.remove('wrong'), 900);
   }
 }
 
-// ==========================================
-// 5. TẠM DỪNG VÀ ĐIỀU HƯỚNG
-// ==========================================
-// Bấm Dừng học -> Đóng băng tại màn hình học
-document.getElementById('btn-stop').addEventListener('click', () => {
-  isPaused = true;
-  clearInterval(timerInterval);
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  
-  document.getElementById('pause-modal').style.display = 'flex';
-});
+/* =========================================================
+   10. TẠM DỪNG VÀ ĐIỀU HƯỚNG
+   ========================================================= */
+const btnStop = document.getElementById('btn-stop');
+if (btnStop) {
+  btnStop.addEventListener('click', () => {
+    isPaused = true;
+    clearInterval(timerInterval);
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    
+    const pauseModal = document.getElementById('pause-modal');
+    if (pauseModal) pauseModal.style.display = 'flex';
+  });
+}
 
-// Bấm Tiếp tục học
-document.getElementById('btn-resume').addEventListener('click', () => {
-  isPaused = false;
-  document.getElementById('pause-modal').style.display = 'none';
-  if (currentTarget) playVoice(currentTarget.hanzi);
-  startTimer();
-});
+const btnResume = document.getElementById('btn-resume');
+if (btnResume) {
+  btnResume.addEventListener('click', () => {
+    isPaused = false;
+    const pauseModal = document.getElementById('pause-modal');
+    if (pauseModal) pauseModal.style.display = 'none';
+    if (currentTarget) playVoice(currentTarget.hanzi);
+    startTimer();
+  });
+}
 
-// Bấm Thoát về trang từ vựng (Giữ nguyên toàn bộ dữ liệu nhập)
-document.getElementById('btn-exit').addEventListener('click', () => {
-  returnToSetup();
-});
+const btnExit = document.getElementById('btn-exit');
+if (btnExit) {
+  btnExit.addEventListener('click', () => {
+    returnToSetup();
+  });
+}
 
 function returnToSetup() {
   isPaused = true;
